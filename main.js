@@ -31,8 +31,48 @@ let schoologySecureAjax = function (params) {
 // MAIN
 
 const settings = {
-    blocked: ["NSHS Library", "Tori Parker"],
+    blocked: ["NSHS Library", "Tori Parker"]
 };
+
+function markupTextNode() {
+    // console.log(this, $(this).children());
+
+    let el = $(this);
+
+    if (el.prop("style")) {
+        el.removeAttr("style");
+    }
+
+    if (el.children().length) {
+        return;
+    }
+
+    let htmlContent = el.html();
+
+    // replace unlinked links with links
+    if (el.prop("tagName") !== "a") {
+        for (let url of htmlContent.match(urlPattern) || []) {
+            htmlContent = htmlContent.replace(
+                url,
+                `<a href="${url}">${url}</a>`
+            );
+        }
+    }
+
+    // highlight days in update posts
+    for (let day of htmlContent.match(
+        /\b((mon|tues|wed(nes)?|thur(s)?|fri|sat(ur)?|sun)(day)?)s?\b/gi
+    ) || []) {
+        htmlContent = htmlContent.replace(
+            day,
+            `<span class="day">${day}</span>`
+        );
+    }
+
+    // unstyle
+
+    el.html(htmlContent);
+}
 
 class FeedPost {
     constructor(domElement) {
@@ -57,36 +97,8 @@ class FeedPost {
         this.element = $(domElement);
         this.updateContent = this.element.find(".update-body");
         this.updateText = this.updateContent.text();
-        this.updateContent.find("*").each(function () {
-            // console.log(this, $(this).children());
-            if ($(this).children().length) {
-                return;
-            }
 
-            let htmlContent = $(this).html();
-
-            // replace unlinked links with links
-            if ($(this).prop("tagName") !== "a") {
-                for (let url of htmlContent.match(urlPattern) || []) {
-                    htmlContent = htmlContent.replace(
-                        url,
-                        `<a href="${url}">${url}</a>`
-                    );
-                }
-            }
-
-            // highlight days in update posts
-            for (let day of htmlContent.match(
-                /\b((mon|tues|wed(nes)?|thur(s)?|fri|sat(ur)?|sun)(day)?)s?\b/gi
-            ) || []) {
-                htmlContent = htmlContent.replace(
-                    day,
-                    `<span class="day">${day}</span>`
-                );
-            }
-
-            $(this).html(htmlContent);
-        });
+        this.updateContent.find("*").each(markupTextNode);
     }
 }
 
@@ -157,23 +169,27 @@ function init() {
         }
     });
 
-    // setInterval(() => {
-    //     let moreButton = $(".sEdgeMore-processed");
-    //     if (moreButton.length) {
-    //         if (document.body.clientHeight - moreButton.offset().top > 500) {
-    //             nextPage();
-    //         }
-    //     }
-    // }, 1000);
+    $(document).click(function(e) {
+        setTimeout(onFeedRefresh, 500);
+    });
+
+    setInterval(() => {
+        let moreButton = $(".sEdgeMore-processed");
+        if (moreButton.length) {
+            if (document.body.clientHeight - moreButton.offset().top > 500) {
+                nextPage();
+            }
+        }
+    }, 1000);
 
     hideOverdueFunction();
     cleanUpLayout();
 
-    setTimeout(() => {
-        setInterval(() => {
-            onFeedRefresh();
-        }, 100);
-    }, 1000);
+    // setTimeout(() => {
+    //     setInterval(() => {
+    //         onFeedRefresh();
+    //     }, settings.feedModifierRefreshRate);
+    // }, 1000);
 }
 
 let likeData = [];
@@ -222,6 +238,7 @@ function randomPfpFromName(name) {
 let moreButton;
 
 function onFeedRefresh() {
+    console.log("Feed refresh")
     // Replace like buttons
     $(".like-btn").each(function () {
         let likeButton = $(this);
