@@ -178,14 +178,16 @@ function init() {
         setTimeout(onFeedRefresh, 500);
     });
 
-    setInterval(() => {
-        let moreButton = $(".sEdgeMore-processed");
-        if (moreButton.length) {
-            if (document.body.clientHeight - moreButton.offset().top > 500) {
-                nextPage();
-            }
-        }
-    }, 1000);
+    // if the more button is too far away from the bottom just click it idk
+
+    // setInterval(() => {
+    //     let moreButton = $(".sEdgeMore-processed");
+    //     if (moreButton.length) {
+    //         if (document.body.clientHeight - moreButton.offset().top > 500) {
+    //             nextPage();
+    //         }
+    //     }
+    // }, 1000);
 
     hideOverdueFunction();
     cleanUpLayout();
