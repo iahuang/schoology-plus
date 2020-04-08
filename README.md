@@ -1,5 +1,7 @@
 # Schoology Plus
 
+![screenshot](https://github.com/iahuang/schoology-plus/raw/master/screenshots/sc0.png)
+
 ## Features:
 
 - Hides posts from Tori Parker and NSHS Library
