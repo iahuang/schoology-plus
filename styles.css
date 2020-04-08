@@ -39,3 +39,10 @@ nav > ul > li > a {
 .day {
     color: rgb(199, 123, 53);
 }
+
+.profile-picture > img {
+    border-radius: 50% !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+}

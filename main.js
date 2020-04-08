@@ -212,9 +212,9 @@ class LikeWidget extends Component {
 function randomPfpFromName(name) {
     let seed = name.hashCode();
 
-    let url = [0, 1, 2, 3, 4].map(
-        i=>"assets/pfp"+i+".png"
-    ).seededRandom(seed);
+    let url = [0, 1, 2, 3, 4]
+        .map((i) => "assets/pfp" + i + ".png")
+        .seededRandom(seed);
 
     return url;
 }
@@ -272,8 +272,8 @@ function onFeedRefresh() {
             .attr("src")
             .match(/(profile_sm\?0)|(user-default.gif)/g);
 
-        if (isDefaultPfp) {
-            let pfpSeed = pfp.attr("src");
+        if (true) {
+            let pfpSeed = pfp.attr("alt");
             let newPfp = randomPfpFromName(pfpSeed);
             pfp.attr("src", chrome.runtime.getURL(newPfp));
         }
