@@ -106,23 +106,28 @@ function nextPage() {
 
 let overdueHidden = false;
 function hideOverdueFunction() {
-    let sidebar = $(".overdue-submissions");
-    let items = sidebar.find(".upcoming-list");
-    sidebar
-        .children()
-        .first()
-        .text(`Overdue (${sidebar.find(".course-event").length})`);
-    sidebar
-        .children()
-        .first()
-        .append(
-            hyperlink("Show/Hide")
-                .href("#")
-                .onClick(() => {
-                    items.toggle();
-                })
-                .render()
-        );
+    whenElementAppears(".upcoming-list", () => {
+        let sidebar = $(".overdue-submissions");
+        let items = sidebar.find(".upcoming-list");
+        sidebar
+            .children()
+            .first()
+            .text(`Overdue (${sidebar.find(".course-event").length})`);
+        sidebar
+            .children()
+            .first()
+            .append(
+                hyperlink("Show/Hide")
+                    .href("#")
+                    .onClick(() => {
+                        items.toggle();
+                    })
+                    .render()
+            );
+        items.toggle();
+        // the due date times underneath assignemnts (who tf looks at those?)
+        sidebar.find(".upcoming-time").remove();
+    });
 }
 
 function cleanUpLayout() {
@@ -140,9 +145,6 @@ function cleanUpLayout() {
     );
 
     // $(".sgy-tabbed-navigation").empty();
-
-    // the due date times underneath assignemnts (who tf looks at those?)
-    $(".upcoming-time").remove();
 
     // the "resources button"
     $(`a[href="/resources"]`).remove();
