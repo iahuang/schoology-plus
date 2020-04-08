@@ -209,9 +209,20 @@ class LikeWidget extends Component {
     }
 }
 
+function randomPfpFromName(name) {
+    let seed = name.hashCode();
+
+    let url = [0, 1, 2, 3, 4].map(
+        i=>"assets/pfp"+i+".png"
+    ).seededRandom(seed);
+
+    return url;
+}
+
 let moreButton;
 
 function onFeedRefresh() {
+    // Replace like buttons
     $(".like-btn").each(function () {
         let likeButton = $(this);
 
@@ -242,6 +253,7 @@ function onFeedRefresh() {
         }
     });
 
+    // Hide posts from blocked users
     let numRemoved = 0;
     for (let post of getFeedPosts()) {
         if (settings.blocked.includes(post.author)) {
@@ -250,6 +262,22 @@ function onFeedRefresh() {
         }
     }
     //console.log("Removed", numRemoved, "posts");
+
+    // Replace default profile pictures
+
+    $(".profile-picture").each(function () {
+        let pfp = $(this).children().first();
+
+        let isDefaultPfp = pfp
+            .attr("src")
+            .match(/(profile_sm\?0)|(user-default.gif)/g);
+
+        if (isDefaultPfp) {
+            let pfpSeed = pfp.attr("src");
+            let newPfp = randomPfpFromName(pfpSeed);
+            pfp.attr("src", chrome.runtime.getURL(newPfp));
+        }
+    });
 }
 
 function getFeedPosts() {

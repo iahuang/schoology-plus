@@ -6,7 +6,7 @@
         {
             "matches": ["*://schoology.newton.k12.ma.us/*"],
             "run_at": "document_idle",
-            "js": ["htmless.js", "jquery-3.4.1.min.js", "patterns.js", "main.js"],
+            "js": ["htmless.js", "jquery-3.4.1.min.js", "patterns.js", "ext.js", "main.js"],
             "css": ["styles.css"]
         }
     ],
