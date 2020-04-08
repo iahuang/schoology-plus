@@ -10,3 +10,4 @@
 - Gets rid of a bunch of necessary UI elements
 - Lets you click on links that weren't already clickable (in case your teachers don't know how to make hyperlinks or smth idk)
 - A bunch of other stuff
+- Removes "2019-2020" and "NSHS" from the course names

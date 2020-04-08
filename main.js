@@ -76,7 +76,9 @@ class FeedPost {
             }
 
             // highlight days in update posts
-            for (let day of htmlContent.match(/\b((mon|tues|wed(nes)?|thur(s)?|fri|sat(ur)?|sun)(day)?)s?\b/gi) || []) {
+            for (let day of htmlContent.match(
+                /\b((mon|tues|wed(nes)?|thur(s)?|fri|sat(ur)?|sun)(day)?)s?\b/gi
+            ) || []) {
                 htmlContent = htmlContent.replace(
                     day,
                     `<span class="day">${day}</span>`
@@ -114,7 +116,7 @@ function hideOverdueFunction() {
         .children()
         .first()
         .append(
-            hyperlink("Hide")
+            hyperlink("Show/Hide")
                 .href("#")
                 .onClick(() => {
                     items.toggle();
@@ -136,7 +138,7 @@ function cleanUpLayout() {
         },
         100
     );
-    
+
     // $(".sgy-tabbed-navigation").empty();
 
     // the due date times underneath assignemnts (who tf looks at those?)
@@ -166,7 +168,7 @@ function init() {
     cleanUpLayout();
 
     setTimeout(() => {
-        setInterval(()=>{
+        setInterval(() => {
             onFeedRefresh();
         }, 100);
     }, 1000);
