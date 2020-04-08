@@ -1,0 +1,41 @@
+:root {
+    --theme-color: coral;
+}
+
+.like-icon {
+    width: 20px;
+    margin-right: 5px;
+}
+
+.like-icon:hover {
+    cursor: pointer;
+}
+
+.likes-text {
+    font-size: medium;
+    display: flex;
+    flex-direction: row;
+}
+
+a, .clickable {
+    color: var(--theme-color) !important;
+}
+
+header {
+    background-color: var(--theme-color) !important;
+}
+
+nav > ul > li > div > button {
+    background-color: var(--theme-color) !important;
+}
+nav > ul > li > button {
+    background-color: var(--theme-color) !important;
+}
+
+nav > ul > li > a {
+    background-color: var(--theme-color) !important;
+}
+
+.day {
+    color: rgb(199, 123, 53);
+}

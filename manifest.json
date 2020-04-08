@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name": "Schoology Plus",
+    "version": "0.1",
+    "content_scripts": [
+        {
+            "matches": ["*://schoology.newton.k12.ma.us/*"],
+            "run_at": "document_idle",
+            "js": ["htmless.js", "jquery-3.4.1.min.js", "patterns.js", "main.js"],
+            "css": ["styles.css"]
+        }
+    ],
+    "web_accessible_resources": [
+        "assets/*",
+        "background.js"
+    ]
+}

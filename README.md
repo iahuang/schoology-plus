@@ -1,0 +1,12 @@
+# Schoology Plus
+
+## Features:
+
+- Hides posts from Tori Parker and NSHS Library
+- Your feed loads as you scroll instead of having to click "more" every time
+- Gives Schoology an orange color, because why not
+- Reworks the like button
+- Lets you collapse your "Overdue" column
+- Gets rid of a bunch of necessary UI elements
+- Lets you click on links that weren't already clickable (in case your teachers don't know how to make hyperlinks or smth idk)
+- A bunch of other stuff
