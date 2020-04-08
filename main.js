@@ -47,6 +47,11 @@ function markupTextNode() {
         return;
     }
 
+    if (el.text().trim() === "") {
+        el.remove();
+        return;
+    }
+
     let htmlContent = el.html();
 
     // replace unlinked links with links
