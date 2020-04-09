@@ -255,6 +255,9 @@ function randomPfpFromName(name) {
 let moreButton;
 
 function clickShowMore() {
+    let numExpandPending = $(".show-more-link").length;
+    let hasExpanded = 0;
+
     $(".show-more-link").each(function () {
         let apiLink = $(this).prop("href");
 
@@ -263,10 +266,15 @@ function clickShowMore() {
                 return response.json();
             })
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 $(this).parent().find(".update-body").html(data.update);
                 $(this).remove();
-                onFeedRefresh();
+
+                hasExpanded++;
+                if (hasExpanded == numExpandPending) {
+                    // Only refresh the feed when all the posts have been expanded
+                    onFeedRefresh();
+                }
             });
     });
 }
