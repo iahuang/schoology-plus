@@ -17,8 +17,8 @@ function whenElementAppears(jqSelector, cb, delay = 500) {
 function whenElementDisappears(domElement, cb, delay = 100) {
     let interval = setInterval(() => {
         if (!document.body.contains(domElement)) {
-            cb();
             clearInterval(interval);
+            cb();
         }
     }, delay);
 }
@@ -128,7 +128,8 @@ function nextPage() {
 
         setTimeout(
             whenElementAppears(".sEdgeMore-processed", () => {
-                onFeedRefresh();
+                onFeedRefresh("Next page loaded");
+                clickShowMore();
             }),
             500
         );
@@ -254,35 +255,102 @@ function randomPfpFromName(name) {
 
 let moreButton;
 
+function requestFullUpdate(apiLink, batchData) {
+    fetch(apiLink)
+        .then((response) => {
+            batchData.hasResolved++;
+            if (!response.ok) {
+                // error handling
+
+                if (response.status === 429) {
+                    // too many requests / rate limited
+
+                    batchData.halted = true; // batch should stop
+                } else {
+                    // something else went wrong
+
+                    console.log(
+                        "An unknown error occurred trying to expand post"
+                    );
+                }
+
+                return; // don't try to parse json
+            }
+            return response.json();
+        })
+        .then((data) => {
+            let batchResolved =
+                batchData.hasResolved == batchData.numExpandPending;
+
+            if (batchData.halted && !batchData.haltCalled) {
+                // dammit one of the fetches returned an error and
+                // nobody has let the caller function know!
+                if (batchResolved) {
+                    // also we should make sure the rest of the fetches have completed too (fail or not)
+                    batchData.on.halt(batchData);
+                    batchData.haltCalled = true;
+                }
+            }
+
+            if (!data) {
+                return;
+            }
+            // if no error was returned:
+
+            // only remove the "show more" button if the post is actually not that long
+            $(this).parent().find(".update-body").html(data.update);
+            $(this).remove();
+
+            batchData.hasExpanded++;
+            if (batchData.hasExpanded == batchData.numExpandPending) {
+                // batch is done!
+                batchData.on.complete(batchData);
+            }
+        });
+}
+
 function clickShowMore() {
-    let numExpandPending = $(".show-more-link").length;
-    let hasExpanded = 0;
+    // when we load the next page, we get a bunch of posts that need to be "read more"'d
+    // the posts also need to be formatted through onFeedRefresh, but for optimization
+    // we should only do that once all posts have been completed
+
+    let showMoreBatchData = {
+        numExpandPending: $(".show-more-link").length,
+        hasResolved: 0, // number of requests that have completed, error or not
+        hasExpanded: 0, // number of requests that have completed successfully
+        halted: false, // halt batch if we get rate limited
+        haltCalled: false, // have we called this.on.halt yet?
+        on: {
+            halt: function (batchData) {
+                // something bad happened
+
+                if (batchData.hasExpanded > 0) {
+                    // if some posts were successfully expanded before an error occurred
+                    // we still need to update those
+                    onFeedRefresh("Auto-expanded show more (incomplete!)");
+                }
+                
+                // try again in a bit
+                setTimeout(() => {
+                    console.log("retrying...")
+                    clickShowMore();
+                }, 2000);
+            },
+            complete: function (batchData) {
+                // Only refresh the feed when all the posts have been expanded
+                onFeedRefresh("Auto-expanded show more");
+            },
+        },
+    };
 
     $(".show-more-link").each(function () {
         let apiLink = $(this).prop("href");
-
-        fetch(apiLink)
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                if (data.update.length < 2000) {
-                    // only remove the "show more" button if the post is actually not that long
-                    $(this).parent().find(".update-body").html(data.update);
-                    $(this).remove();
-                }
-
-                hasExpanded++;
-                if (hasExpanded == numExpandPending) {
-                    // Only refresh the feed when all the posts have been expanded
-                    onFeedRefresh();
-                }
-            });
+        requestFullUpdate(apiLink, showMoreBatchData);
     });
 }
 
-function onFeedRefresh() {
-    console.log("Feed refresh");
+function onFeedRefresh(reason = "none") {
+    console.log("Feed refresh:", reason);
     // Replace like buttons
     $(".like-btn").each(function () {
         let likeButton = $(this);
@@ -343,7 +411,6 @@ function onFeedRefresh() {
     // Remove file size labels
 
     $(".attachments-file-size").remove();
-    clickShowMore();
 }
 
 function getFeedPosts() {
@@ -357,7 +424,8 @@ whenElementAppears(
     () => {
         console.log("Ready");
         init();
-        onFeedRefresh();
+        onFeedRefresh("Initial feed refresh");
+        clickShowMore();
     },
     100
 );
