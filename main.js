@@ -266,9 +266,11 @@ function clickShowMore() {
                 return response.json();
             })
             .then((data) => {
-                // console.log(data);
-                $(this).parent().find(".update-body").html(data.update);
-                $(this).remove();
+                if (data.update.length < 2000) {
+                    // only remove the "show more" button if the post is actually not that long
+                    $(this).parent().find(".update-body").html(data.update);
+                    $(this).remove();
+                }
 
                 hasExpanded++;
                 if (hasExpanded == numExpandPending) {

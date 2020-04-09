@@ -6,7 +6,7 @@
 
 - Hides posts from Tori Parker and NSHS Library
 - Your feed loads as you scroll instead of having to click "more" every time
-- Longer posts are automatically expanded instead of having to click "read more" every time
+- Medium-length posts are automatically expanded instead of having to click "read more" every time
 - Standardizes text formatting to use page default (for those teachers who like to write their updates in 1000pt font for some reason)
 - Cleaner looking profile pictures
 - Gives Schoology an orange color, because why not
