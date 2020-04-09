@@ -14,6 +14,15 @@ function whenElementAppears(jqSelector, cb, delay = 500) {
     }, delay);
 }
 
+function whenElementDisappears(domElement, cb, delay = 100) {
+    let interval = setInterval(() => {
+        if (!document.body.contains(domElement)) {
+            cb();
+            clearInterval(interval);
+        }
+    }, delay);
+}
+
 function scrollDistanceFromBottom() {
     let scrollBottom = document.body.clientHeight - window.innerHeight;
     return scrollBottom - window.scrollY;
@@ -31,7 +40,7 @@ let schoologySecureAjax = function (params) {
 // MAIN
 
 const settings = {
-    blocked: ["NSHS Library", "Tori Parker"]
+    blocked: ["NSHS Library", "Tori Parker"],
 };
 
 function markupTextNode() {
@@ -47,10 +56,10 @@ function markupTextNode() {
         return;
     }
 
-    if (el.text().trim() === "") {
-        el.remove();
-        return;
-    }
+    // if (el.text().trim() === "") {
+    //     el.remove();
+    //     return;
+    // }
 
     let htmlContent = el.html();
 
@@ -62,6 +71,11 @@ function markupTextNode() {
                 `<a href="${url}">${url}</a>`
             );
         }
+
+        htmlContent = htmlContent.replace(
+            /\baspen\b/gi,
+            `<a href="https://aspen.newton.k12.ma.us/">Aspen</a>`
+        );
     }
 
     // highlight days in update posts
@@ -174,10 +188,6 @@ function init() {
         }
     });
 
-    $(document).click(function(e) {
-        setTimeout(onFeedRefresh, 500);
-    });
-
     // if the more button is too far away from the bottom just click it idk
 
     // setInterval(() => {
@@ -235,7 +245,7 @@ class LikeWidget extends Component {
 function randomPfpFromName(name) {
     let seed = name.hashCode();
 
-    let url = [0, 1, 2, 3, 4]
+    let url = [0, 1, 2, 3, 4, 5]
         .map((i) => "assets/pfp" + i + ".png")
         .seededRandom(seed);
 
@@ -244,8 +254,25 @@ function randomPfpFromName(name) {
 
 let moreButton;
 
+function clickShowMore() {
+    $(".show-more-link").each(function () {
+        let apiLink = $(this).prop("href");
+
+        fetch(apiLink)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                $(this).parent().find(".update-body").html(data.update);
+                $(this).remove();
+                onFeedRefresh();
+            });
+    });
+}
+
 function onFeedRefresh() {
-    console.log("Feed refresh")
+    console.log("Feed refresh");
     // Replace like buttons
     $(".like-btn").each(function () {
         let likeButton = $(this);
@@ -302,6 +329,11 @@ function onFeedRefresh() {
             pfp.attr("src", chrome.runtime.getURL(newPfp));
         }
     });
+
+    // Remove file size labels
+
+    $(".attachments-file-size").remove();
+    clickShowMore();
 }
 
 function getFeedPosts() {
